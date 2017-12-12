@@ -95,4 +95,4 @@ cat $SNAP_CREATION $SNAP_DELETION > /var/log/mail_report
 
 # Sending the mail Update
 
-cat /var/log/mail_report | mail -s "SUBJRCT"$EMAIL_LIST
+cat /var/log/mail_report | mail -s "Volume Snapshots Status" $EMAIL_LIST
