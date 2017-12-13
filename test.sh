@@ -2,8 +2,8 @@
 
 # Volume list file will have volume-id:Volume-name format
 
-VOLUMES_LIST=/var/log/volumes-list
-SNAPSHOT_INFO=/var/log/snapshot_info
+VOLUMES_LIST=volumes-list
+SNAPSHOT_INFO=snapshot_info
 DATE=`date +%Y-%m-%d`
 REGION="us-west-2"
 
@@ -12,8 +12,8 @@ REGION="us-west-2"
 # Snapshots Retention Period for each volume snapshot
 RETENTION=6
 
-SNAP_CREATION=/var/log/snap_creation
-SNAP_DELETION=/var/log/snap_deletion
+SNAP_CREATION=snap_creation
+SNAP_DELETION=snap_deletion
 
 EMAIL_LIST=yaroslav@aws4.net
 
@@ -61,7 +61,7 @@ VOL_NAME=`echo $VOL_INFO | awk -F":" '{print $2}'`
 
 # Getting the Snapshot details of each volume.
 
-/usr/local/bin/aws ec2 describe-snapshots –query Snapshots[*].[SnapshotId,VolumeId,Description,StartTime] –output text –filters “Name=status,Values=completed” “Name=volume-id,Values=$VOL_ID” | grep -v “CreateImage” > $SNAPSHOT_INFO
+/usr/local/bin/aws ec2 describe-snapshots --query Snapshots[*].[SnapshotId,VolumeId,Description,StartTime] --output text --filters "Name=status,Values=completed” “Name=volume-id,Values=$VOL_ID" | grep -v "CreateImage" > $SNAPSHOT_INFO
 
 # Snapshots Retention Period Checking and if it crosses delete them.
 
@@ -81,7 +81,7 @@ echo $RETENTION_DIFF
 
 if [ $RETENTION -lt $RETENTION_DIFF ];
 then
-/usr/local/bin/aws ec2 delete-snapshot –snapshot-id $SNAP_ID –region $REGION –output text> /tmp/snap_del
+/usr/local/bin/aws ec2 delete-snapshot --snapshot-id $SNAP_ID --region $REGION --output text> /tmp/snap_del
 echo DELETING $SNAP_INFO >> $SNAP_DELETION
 fi
 done < $SNAPSHOT_INFO
@@ -91,8 +91,8 @@ echo >> $SNAP_DELETION
 
 # Merging the Snap Creation and Deletion Data
 
-cat $SNAP_CREATION $SNAP_DELETION > /var/log/mail_report
+cat $SNAP_CREATION $SNAP_DELETION > mail_report
 
 # Sending the mail Update
 
-cat /var/log/mail_report | mail -s "Volume Snapshots Status" $EMAIL_LIST
+cat mail_report | mail -s "Volume Snapshots Status" $EMAIL_LIST
