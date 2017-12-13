@@ -39,7 +39,7 @@ VOL_NAME=`echo $VOL_INFO | awk -F":" '{print $2}'`
 
 DESCRIPTION="${VOL_NAME}_${DATE}"
 
-/usr/local/bin/aws ec2 create-snapshot --volume-id $VOL_ID --description "$DESCRIPTION" --region $REGION &>> $SNAP_CREATION
+/usr/local/bin/aws ec2 create-snapshot --volume-id $VOL_ID --description "$DESCRIPTION" --region $REGION >> $SNAP_CREATION
 done
 else
 echo "Volumes list file is not available : $VOLUMES_LIST Exiting." | mail -s "Snapshots Creation Status" $EMAIL_LIST
@@ -61,7 +61,7 @@ VOL_NAME=`echo $VOL_INFO | awk -F":" '{print $2}'`
 
 # Getting the Snapshot details of each volume.
 
-/usr/local/bin/aws ec2 describe-snapshots --query Snapshots[*].[SnapshotId,VolumeId,Description,StartTime] --output text --filters "Name=status,Values=completed” “Name=volume-id,Values=$VOL_ID" | grep -v "CreateImage" > $SNAPSHOT_INFO
+/usr/local/bin/aws ec2 describe-snapshots --query Snapshots[*].[SnapshotId,VolumeId,Description,StartTime] --output text --filters "Name=status,Values=completed" "Name=volume-id,Values=$VOL_ID" | grep -v "CreateImage" >> $SNAPSHOT_INFO
 
 # Snapshots Retention Period Checking and if it crosses delete them.
 
@@ -79,9 +79,9 @@ echo $RETENTION_DIFF
 
 # Deleting the Snapshots which are older than the Retention Period
 
-if [ $RETENTION -lt $RETENTION_DIFF ];
+if [ "$RETENTION" -lt "$RETENTION_DIFF" ];
 then
-/usr/local/bin/aws ec2 delete-snapshot --snapshot-id $SNAP_ID --region $REGION --output text> /tmp/snap_del
+/usr/local/bin/aws ec2 delete-snapshot --snapshot-id $SNAP_ID --region $REGION --output text > /tmp/snap_del
 echo DELETING $SNAP_INFO >> $SNAP_DELETION
 fi
 done < $SNAPSHOT_INFO

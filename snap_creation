@@ -1,3 +1,14 @@
 List of Snapshots Creation Status
+{
+    "Description": "test_2017-12-13", 
+    "Encrypted": false, 
+    "VolumeId": "vol-0888bf7755cec3819", 
+    "State": "pending", 
+    "VolumeSize": 8, 
+    "StartTime": "2017-12-13T12:55:11.000Z", 
+    "Progress": "", 
+    "OwnerId": "762510625864", 
+    "SnapshotId": "snap-0a8f5b44583ed09f3"
+}
 
 
